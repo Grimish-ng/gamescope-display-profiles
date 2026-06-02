@@ -26,3 +26,19 @@ sudo cp vg32vq1b.bin /lib/firmware/edid/
 # Add to /etc/mkinitcpio.conf FILES=(/lib/firmware/edid/vg32vq1b.bin)
 sudo mkinitcpio -P
 ```
+
+## Pipewire Audio Configuration
+
+Sample rate: 48kHz default, 44100/48000 allowed (96kHz removed)
+Quantum: 512
+
+Dolby Pro Logic II filter chain routes audio through headphone jack
+to VIZIO SB2820n-E0 soundbar via aux cable.
+
+Installation:
+  cp pipewire/pipewire.conf ~/.config/pipewire/
+  mkdir -p ~/.config/pipewire/pipewire.conf.d/
+  cp pipewire/pipewire.conf.d/99-dolby-plii.conf ~/.config/pipewire/pipewire.conf.d/
+  mkdir -p ~/.config/pipewire/pipewire-pulse.conf.d/
+  cp pipewire/pipewire-pulse.conf.d/99-default-sink.conf ~/.config/pipewire/pipewire-pulse.conf.d/
+  systemctl --user restart pipewire pipewire-pulse wireplumber
