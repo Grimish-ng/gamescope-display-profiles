@@ -1,0 +1,37 @@
+#!/usr/bin/bash
+exec > >(logger -t steam-exit-handler) 2>&1
+echo "steam-exit-handler called"
+
+SWITCH_FILE="${XDG_RUNTIME_DIR:-/run/user/1000}/steamos-switch-to-desktop"
+
+if [ -f "$SWITCH_FILE" ]; then
+    echo "switch file found, switching to desktop"
+    rm -f "$SWITCH_FILE"
+    # Stop mangoapp cleanly before gamescope shutdown
+    systemctl --user stop gamescope-mangoapp.service 2>/dev/null || true
+    echo "sending shutdown to gamescope"
+    gamescopectl shutdown
+    sleep 1
+    sudo chvt 1
+    sudo systemd-run \
+      --unit="switch-to-desktop-$(date +%s)" \
+      --no-block \
+      /bin/bash -c '
+        exec > >(logger -t switch-to-desktop) 2>&1
+        echo "writing plasma session to plasmalogin.conf"
+        tee /etc/plasmalogin.conf << CONF
+[Autologin]
+User=grimish
+Session=plasma
+Relogin=true
+
+[Greeter]
+PreselectedUser=grimish
+CONF
+        echo "restarting plasmalogin"
+        sleep 1
+        systemctl restart plasmalogin.service
+      '
+else
+    echo "normal steam exit, no switch requested"
+fi
