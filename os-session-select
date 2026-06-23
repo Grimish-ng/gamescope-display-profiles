@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/bash
 exec > >(logger -t os-session-select) 2>&1
 echo "os-session-select called with: $@"
 
@@ -7,20 +7,22 @@ SESSION="${1:-gamescope}"
 case "$SESSION" in
     desktop|plasma)
         echo "switching to plasma"
+        /usr/lib/steamos/steam-set-session plasma
         touch "${XDG_RUNTIME_DIR:-/run/user/1000}/steamos-switch-to-desktop"
         steam -shutdown
         ;;
     gamescope|steam)
         echo "switching to gamescope"
-        sudo tee /etc/plasmalogin.conf << CONF
-[Autologin]
-User=grimish
-Session=gamescope-wayland
-Relogin=true
-
-[Greeter]
-PreselectedUser=grimish
-CONF
+        /usr/lib/steamos/steam-set-session gamescope-wayland
+        sudo systemd-run \
+          --unit="switch-to-gamescope-$(date +%s)" \
+          --no-block \
+          /bin/bash -c '
+            exec > >(logger -t switch-to-gamescope) 2>&1
+            echo "waiting for KDE to exit then restarting plasmalogin"
+            sleep 3
+            systemctl restart plasmalogin.service
+          '
         qdbus org.kde.Shutdown /Shutdown org.kde.Shutdown.logout
         ;;
 esac

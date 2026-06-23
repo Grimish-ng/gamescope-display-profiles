@@ -18,16 +18,8 @@ if [ -f "$SWITCH_FILE" ]; then
       --no-block \
       /bin/bash -c '
         exec > >(logger -t switch-to-desktop) 2>&1
-        echo "writing plasma session to plasmalogin.conf"
-        tee /etc/plasmalogin.conf << CONF
-[Autologin]
-User=grimish
-Session=plasma
-Relogin=true
-
-[Greeter]
-PreselectedUser=grimish
-CONF
+        echo "setting plasma session"
+        /usr/lib/steamos/steam-set-session plasma
         echo "restarting plasmalogin"
         sleep 1
         systemctl restart plasmalogin.service
