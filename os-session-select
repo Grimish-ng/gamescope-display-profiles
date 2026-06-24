@@ -7,13 +7,13 @@ SESSION="${1:-gamescope}"
 case "$SESSION" in
     desktop|plasma)
         echo "switching to plasma"
-        /usr/lib/steamos/steam-set-session plasma.desktop
+        pkexec /usr/lib/steamos/steam-set-session plasma.desktop
         touch "${XDG_RUNTIME_DIR:-/run/user/1000}/steamos-switch-to-desktop"
         steam -shutdown
         ;;
     gamescope|steam)
         echo "switching to gamescope"
-        /usr/lib/steamos/steam-set-session gamescope-wayland.desktop
-        sudo systemctl restart plasmalogin.service
+        pkexec /usr/lib/steamos/steam-set-session gamescope-wayland.desktop
+        pkexec /usr/bin/systemctl restart plasmalogin.service
         ;;
 esac
