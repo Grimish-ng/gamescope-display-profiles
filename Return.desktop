@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Return to Gaming Mode
-Exec=steamos-session-select gamescope
+Exec=os-session-select gamescope
 Icon=gaming-return
 Terminal=false
 Type=Application

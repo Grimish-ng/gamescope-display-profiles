@@ -7,7 +7,6 @@ SWITCH_FILE="${XDG_RUNTIME_DIR:-/run/user/1000}/steamos-switch-to-desktop"
 if [ -f "$SWITCH_FILE" ]; then
     echo "switch file found, switching to desktop"
     rm -f "$SWITCH_FILE"
-    # Stop mangoapp cleanly before gamescope shutdown
     systemctl --user stop gamescope-mangoapp.service 2>/dev/null || true
     echo "sending shutdown to gamescope"
     gamescopectl shutdown
@@ -18,9 +17,7 @@ if [ -f "$SWITCH_FILE" ]; then
       --no-block \
       /bin/bash -c '
         exec > >(logger -t switch-to-desktop) 2>&1
-        echo "setting plasma session"
-        /usr/lib/steamos/steam-set-session plasma
-        echo "restarting plasmalogin"
+        /usr/lib/steamos/steam-set-session plasma.desktop
         sleep 1
         systemctl restart plasmalogin.service
       '

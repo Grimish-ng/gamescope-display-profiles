@@ -1,24 +1,18 @@
 #!/bin/bash
-
 set -e
 
 DISPLAY_MANAGER="$(systemctl show -p Id --value display-manager)"
-
 case "${DISPLAY_MANAGER%.service}" in
     plasmalogin) CONF_FILE="/etc/plasmalogin.conf.d/zz-steamos-autologin.conf" ;;
     sddm)        CONF_FILE="/etc/sddm.conf.d/zz-steamos-autologin.conf" ;;
     *)           echo "Unsupported display manager: $DISPLAY_MANAGER"; exit 0 ;;
 esac
 
-# Ensure conf.d directory exists
 mkdir -p "$(dirname "$CONF_FILE")"
 
-# Session argument: gamescope-wayland or plasma
-SESSION="${1:-gamescope-wayland}"
+SESSION="${1:-gamescope-wayland.desktop}"
 
-echo "steam-set-session: setting session to $SESSION in $CONF_FILE"
-
-tee "$CONF_FILE" > /dev/null << CONF
+cat > "$CONF_FILE" << CONF
 [Autologin]
 Session=$SESSION
 CONF
