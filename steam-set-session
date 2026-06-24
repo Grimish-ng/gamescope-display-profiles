@@ -10,7 +10,7 @@ esac
 
 mkdir -p "$(dirname "$CONF_FILE")"
 
-SESSION="${1:-gamescope-wayland.desktop}"
+SESSION="${1:-gamescope-session.desktop}"
 
 cat > "$CONF_FILE" << CONF
 [Autologin]
